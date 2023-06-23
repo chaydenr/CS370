@@ -1,9 +1,10 @@
+// NEW!!!!! New file, step 3
 struct ps_proc {
-    char proc_name[16];
-    int state;
-    int pid;
-    int memory;
-    int priority;
+  char proc_name[16];
+  int state;
+  int pid;
+  int memory;
+  int priority;
 };
 
 enum procstate {
