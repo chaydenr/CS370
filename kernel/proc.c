@@ -288,6 +288,9 @@ fork(void)
     return -1;
   }
 
+  // NEW!!!! Update priority field to 1 for new process
+  np->priority = 1;
+
   // Copy user memory from parent to child.
   if(uvmcopy(p->pagetable, np->pagetable, p->sz) < 0){
     freeproc(np);
