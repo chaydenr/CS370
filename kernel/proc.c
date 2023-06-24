@@ -663,15 +663,15 @@ either_copyin(void *dst, int user_src, uint64 src, uint64 len)
 
 // NEW ps system call definition
 void ps(struct ps_proc *ps_array) {
-  int i = 0; // iterates through ps_array
-  struct proc *p;
+  // int i = 0; // iterates through ps_array
+  struct proc *p; // temp struct for iteration through array
   struct ps_proc tmp_ps_array[MAX_PROCS];
   int num_processes = 0;
 
   // Initialize local array to 0
   memset(tmp_ps_array, 0, sizeof(tmp_ps_array));
 
-  for (i = 0; i < NPROC && num_processes < MAX_PROCS; i++) {
+  for (p = proc; p < &proc[NPROC] && num_processes < MAX_PROCS; p++) {
     // lock ptable during use
     acquire(&p->lock);
 
@@ -690,10 +690,9 @@ void ps(struct ps_proc *ps_array) {
     release(&p->lock);
   }
 
-  // Copy the local_ps_array from kernel space to user space
+  // copyout the local_ps_array from kernel space to user space
   copyout(myproc()->pagetable, (uint64)ps_array, (char *)&tmp_ps_array, sizeof(tmp_ps_array));
 }
-
 
 // Print a process listing to console.  For debugging.
 // Runs when user types ^P on console.
