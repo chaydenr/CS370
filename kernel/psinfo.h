@@ -16,3 +16,5 @@ enum procstate {
 };
 
 #define MAX_PROCS 15
+
+struct ps_proc local_array[MAX_PROCS];

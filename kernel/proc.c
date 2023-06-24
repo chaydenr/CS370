@@ -22,7 +22,7 @@ extern void forkret(void);
 static void freeproc(struct proc *p);
 
 // NEW declaration for ps call
-void ps(struct ps_proc *ps_array);
+// void ps(struct ps_proc *ps_array);
 
 extern char trampoline[]; // trampoline.S
 
@@ -665,11 +665,11 @@ either_copyin(void *dst, int user_src, uint64 src, uint64 len)
 void ps(struct ps_proc *ps_array) {
   // int i = 0; // iterates through ps_array
   struct proc *p; // temp struct for iteration through array
-  struct ps_proc tmp_ps_array[MAX_PROCS];
+  // struct ps_proc tmp_ps_array[MAX_PROCS]; // local array
   int num_processes = 0;
 
   // Initialize local array to 0
-  memset(tmp_ps_array, 0, sizeof(tmp_ps_array));
+  memset(local_array, 0, sizeof(local_array));
 
   for (p = proc; p < &proc[NPROC] && num_processes < MAX_PROCS; p++) {
     // lock ptable during use
@@ -677,11 +677,11 @@ void ps(struct ps_proc *ps_array) {
 
     // populate tmp_ps_array with proc info if !UNUSED
     if (p->state != UNUSED) {
-      safestrcpy(tmp_ps_array[num_processes].proc_name, p->name, sizeof(tmp_ps_array[num_processes].proc_name));
-      tmp_ps_array[num_processes].state = p->state;
-      tmp_ps_array[num_processes].pid = p->pid;
-      tmp_ps_array[num_processes].memory = p->sz;
-      tmp_ps_array[num_processes].priority = p->priority;
+      safestrcpy(local_array[num_processes].proc_name, p->name, sizeof(local_array[num_processes].proc_name));
+      local_array[num_processes].state = p->state;
+      local_array[num_processes].pid = p->pid;
+      local_array[num_processes].memory = p->sz;
+      local_array[num_processes].priority = p->priority;
 
       num_processes++;
     }
@@ -690,8 +690,8 @@ void ps(struct ps_proc *ps_array) {
     release(&p->lock);
   }
 
-  // copyout the local_ps_array from kernel space to user space
-  copyout(myproc()->pagetable, (uint64)ps_array, (char *)&tmp_ps_array, sizeof(tmp_ps_array));
+  // copyout the local_array from kernel space to user space
+  copyout(myproc()->pagetable, (uint64)ps_array, (char *)&local_array, sizeof(local_array));
 }
 
 // Print a process listing to console.  For debugging.

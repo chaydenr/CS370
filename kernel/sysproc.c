@@ -5,6 +5,8 @@
 #include "memlayout.h"
 #include "spinlock.h"
 #include "proc.h"
+// NEW !! needed for sys_ps function
+#include "psinfo.h"
 
 uint64
 sys_exit(void)
@@ -88,4 +90,15 @@ sys_uptime(void)
   xticks = ticks;
   release(&tickslock);
   return xticks;
+}
+
+// NEW !!!
+int sys_ps(void *arg)
+{
+  uint64 p;
+  argaddr(0, local_array);
+
+  ps(p);
+
+  return 0;
 }
