@@ -6,6 +6,9 @@
 #include "proc.h"
 #include "defs.h"
 
+// NEW include psinfo
+#include "psinfo.h"
+
 struct cpu cpus[NCPU];
 
 struct proc proc[NPROC];
@@ -17,6 +20,9 @@ struct spinlock pid_lock;
 
 extern void forkret(void);
 static void freeproc(struct proc *p);
+
+// NEW declaration for ps call
+void ps(struct ps_proc *ps_array);
 
 extern char trampoline[]; // trampoline.S
 
@@ -654,6 +660,40 @@ either_copyin(void *dst, int user_src, uint64 src, uint64 len)
     return 0;
   }
 }
+
+// NEW ps system call definition
+void ps(struct ps_proc *ps_array) {
+  int i = 0; // iterates through ps_array
+  struct proc *p;
+  struct ps_proc tmp_ps_array[MAX_PROCS];
+  int num_processes = 0;
+
+  // Initialize local array to 0
+  memset(tmp_ps_array, 0, sizeof(tmp_ps_array));
+
+  for (i = 0; i < NPROC && num_processes < MAX_PROCS; i++) {
+    // lock ptable during use
+    acquire(&p->lock);
+
+    // populate tmp_ps_array with proc info if !UNUSED
+    if (p->state != UNUSED) {
+      safestrcpy(tmp_ps_array[num_processes].proc_name, p->name, sizeof(tmp_ps_array[num_processes].proc_name));
+      tmp_ps_array[num_processes].state = p->state;
+      tmp_ps_array[num_processes].pid = p->pid;
+      tmp_ps_array[num_processes].memory = p->sz;
+      tmp_ps_array[num_processes].priority = p->priority;
+
+      num_processes++;
+    }
+
+    // unlock ptable at end of loop
+    release(&p->lock);
+  }
+
+  // Copy the local_ps_array from kernel space to user space
+  copyout(myproc()->pagetable, (uint64)ps_array, (char *)&tmp_ps_array, sizeof(tmp_ps_array));
+}
+
 
 // Print a process listing to console.  For debugging.
 // Runs when user types ^P on console.
