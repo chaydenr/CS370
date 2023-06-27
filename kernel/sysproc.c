@@ -7,6 +7,8 @@
 #include "proc.h"
 // NEW !! needed for sys_ps function
 #include "psinfo.h"
+// NEW !! needed for sys_ps function
+#include "psinfo.h"
 
 uint64
 sys_exit(void)

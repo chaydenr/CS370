@@ -106,6 +106,7 @@ struct proc {
   char name[16];               // Process name (debugging)
   
   // NEW FIELDS
+  // NEW FIELDS
   uint64 priority;
 };
 

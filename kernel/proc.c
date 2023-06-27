@@ -9,6 +9,9 @@
 // NEW include psinfo
 #include "psinfo.h"
 
+// NEW include psinfo
+#include "psinfo.h"
+
 struct cpu cpus[NCPU];
 
 struct proc proc[NPROC];
