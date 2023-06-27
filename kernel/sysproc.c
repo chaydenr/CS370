@@ -93,12 +93,13 @@ sys_uptime(void)
 }
 
 // NEW !!!
-int sys_ps(void *arg)
+// int sys_ps(void *arg) // *arg Might be needed?
+int sys_ps(void)
 {
   uint64 p;
-  argaddr(0, local_array);
+  argaddr(0, &p); // gets address of local_array being passed to func
 
-  ps(p);
+  ps(p); //
 
   return 0;
 }

@@ -675,7 +675,7 @@ void ps(struct ps_proc *ps_array) {
     // lock ptable during use
     acquire(&p->lock);
 
-    // populate tmp_ps_array with proc info if !UNUSED
+    // populate local_array with proc info if !UNUSED
     if (p->state != UNUSED) {
       safestrcpy(local_array[num_processes].proc_name, p->name, sizeof(local_array[num_processes].proc_name));
       local_array[num_processes].state = p->state;
