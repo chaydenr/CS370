@@ -105,6 +105,9 @@ struct proc {
   struct inode *cwd;           // Current directory
   char name[16];               // Process name (debugging)
   
-  // NEW FIELD!
+  // NEW FIELDS
   uint64 priority;
 };
+
+// NEW include function in header
+  // void ps(struct ps_proc *ps_array);

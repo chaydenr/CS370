@@ -6,6 +6,9 @@
 #include "proc.h"
 #include "defs.h"
 
+// NEW include psinfo
+#include "psinfo.h"
+
 struct cpu cpus[NCPU];
 
 struct proc proc[NPROC];
@@ -17,6 +20,9 @@ struct spinlock pid_lock;
 
 extern void forkret(void);
 static void freeproc(struct proc *p);
+
+// NEW declaration for ps call
+// void ps(struct ps_proc *ps_array);
 
 extern char trampoline[]; // trampoline.S
 
@@ -653,6 +659,36 @@ either_copyin(void *dst, int user_src, uint64 src, uint64 len)
     memmove(dst, (char*)src, len);
     return 0;
   }
+}
+
+// NEW ps system call definition
+void ps(struct ps_proc *ps_array) {
+  // int i = 0; // iterates through ps_array
+  struct proc *p; // temp struct for iteration through array
+  // struct ps_proc tmp_ps_array[MAX_PROCS]; // local array
+  int num_processes = 0;
+
+  for (int i=0; i<MAX_PROCS; i++ ) {
+    // lock ptable during use
+    acquire(&p->lock);
+
+    // populate local_array with proc info if !UNUSED
+    if (p->state != UNUSED) {
+      safestrcpy(local_array[num_processes].proc_name, p->name, sizeof(local_array[num_processes].proc_name));
+      local_array[num_processes].state = p->state;
+      local_array[num_processes].pid = p->pid;
+      local_array[num_processes].memory = p->sz;
+      local_array[num_processes].priority = p->priority;
+
+      num_processes++;
+    }
+
+    // unlock ptable at end of loop
+    release(&p->lock);
+  }
+
+  // copyout the local_array from kernel space to user space
+  copyout(myproc()->pagetable, (uint64)ps_array, (char *)&local_array, sizeof(local_array));
 }
 
 // Print a process listing to console.  For debugging.

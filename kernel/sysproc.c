@@ -5,6 +5,8 @@
 #include "memlayout.h"
 #include "spinlock.h"
 #include "proc.h"
+// NEW !! needed for sys_ps function
+#include "psinfo.h"
 
 uint64
 sys_exit(void)
@@ -88,4 +90,16 @@ sys_uptime(void)
   xticks = ticks;
   release(&tickslock);
   return xticks;
+}
+
+// NEW !!!
+// int sys_ps(void *arg) // *arg Might be needed?
+int sys_ps(struct ps_proc[])
+{
+  uint64 p;
+  argaddr(0, &p); // gets address of local_array being passed to func
+
+  ps(p); //
+
+  return 0;
 }
